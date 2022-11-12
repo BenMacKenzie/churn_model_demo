@@ -5,7 +5,8 @@ pip install --index-url https://test.pypi.org/simple/ --no-deps ben_mackenzie_fe
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC use ben_churn_model
+# MAGIC 
+# MAGIC use schema ben_customer_churn_model;
 
 # COMMAND ----------
 
@@ -20,7 +21,7 @@ pip install --index-url https://test.pypi.org/simple/ --no-deps ben_mackenzie_fe
 # COMMAND ----------
 
 # MAGIC %sql 
-# MAGIC select * from dbu order by customer_id, date desc
+# MAGIC select * from dbu
 
 # COMMAND ----------
 
@@ -58,6 +59,10 @@ pip install --index-url https://test.pypi.org/simple/ --no-deps ben_mackenzie_fe
 # COMMAND ----------
 
 from features.feature_generation import build_training_data_set,feature_tables, build_feature_table, register_dimension_table, tables, features
+
+
+# COMMAND ----------
+
 df = build_training_data_set()
 
 # COMMAND ----------
@@ -72,11 +77,11 @@ display(df)
 
 # COMMAND ----------
 
-build_feature_table(feature_tables['customer_service_calls'], drop_existing=True)
+build_feature_table(feature_tables['customer_service_calls'])
 
 # COMMAND ----------
 
-build_feature_table(feature_tables['dbu_growth'], drop_existing=True)
+build_feature_table(feature_tables['dbu_growth'])
 
 # COMMAND ----------
 
@@ -104,20 +109,22 @@ fs = FeatureStoreClient()
 
 feature_lookups = [
     FeatureLookup(
-        table_name="ben_churn_model.dbu_growth",
-        feature_names=["6_month_growth_sql_dbu", "6_month_growth_job_dbu"],
+        table_name="ben_customer_churn_model.dbu_growth",
+        feature_names=["dbu_growth_source_col_sql_dbu_window_length_3", "dbu_growth_source_col_sql_dbu_window_length_6",
+                      "dbu_growth_source_col_job_dbu_window_length_3", "dbu_growth_source_col_job_dbu_window_length_6",
+                      "dbu_growth_source_col_interactive_dbu_window_length_3", "dbu_growth_source_col_interactive_dbu_window_length_6"],
         lookup_key="customer_id",
         timestamp_lookup_key = "renewal_date"
     ),
     FeatureLookup(
-        table_name="ben_churn_model.customer_service_calls",
+        table_name="ben_customer_churn_model.customer_service_calls",
         feature_names=["customer_service_count"],        
         lookup_key="customer_id",
         timestamp_lookup_key = "renewal_date"
     ),
   
    FeatureLookup(
-        table_name="ben_churn_model.customers",
+        table_name="ben_customer_churn_model.customers",
         feature_names=["tier"],        
         lookup_key="customer_id",
         timestamp_lookup_key = "renewal_date"

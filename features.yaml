@@ -1,4 +1,4 @@
-schema: ben_churn_model
+schema: ben_customer_churn_model
 
 eol_table: 
   name: renewal_eol
@@ -47,35 +47,21 @@ features:
   default_value: 'standard'
  
  
-- name: 6_month_growth_sql_dbu
+- name: dbu_growth*
   data_type: float
   table: dbu
   default_value: 1
   type: time_series_aggregate
   function: geometric_average
-  source_col: sql_dbu
+  source_col: [sql_dbu, job_dbu, interactive_dbu]
   grain: month
   time_boundary: lastCompleteMonth
-  window_length: 6
+  window_length: [3,6]
   offset:
     grain: month
-    length: 0
+    length: 1
 
-- name: 6_month_growth_job_dbu
-  data_type: float
-  table: dbu
-  default_value: 1
-  type: time_series_aggregate
-  function: geometric_average
-  source_col: job_dbu
-  grain: month
-  time_boundary: lastCompleteMonth
-  window_length: 6
-  offset:
-    grain: month
-    length: 0
     
-
 - name: customer_service_count
   data_type: int
   table: customer_support
@@ -102,8 +88,8 @@ feature_store:
     start_date: 2021-01-01
     end_date: 2022-08-01
     features:
-      - 6_month_growth_sql_dbu
-      - 6_month_growth_job_dbu
+      - dbu_growth*
+
 
   - name: customer_service_calls
     type: regular
