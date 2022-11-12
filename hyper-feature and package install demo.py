@@ -1,4 +1,14 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC ####This note book illustrates installing the feature utils package (rather than cloning repo) and 'hyper-features'
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC first install the package.
+
+# COMMAND ----------
+
 pip install --index-url https://test.pypi.org/simple/ --no-deps ben_mackenzie_features --upgrade
 
 
@@ -55,6 +65,11 @@ pip install --index-url https://test.pypi.org/simple/ --no-deps ben_mackenzie_fe
 
 # MAGIC %md
 # MAGIC ### Build features based on yaml spec
+
+# COMMAND ----------
+
+# MAGIC %sh
+# MAGIC cat features.yaml
 
 # COMMAND ----------
 
@@ -143,39 +158,3 @@ training_df = training_set.load_df()
 # COMMAND ----------
 
 display(training_df)
-
-# COMMAND ----------
-
-display(training_df)
-
-# COMMAND ----------
-
-pip install --index-url https://test.pypi.org/simple/ --no-deps ben_mackenzie_features --upgrade
-
-
-# COMMAND ----------
-
-from features.generate import get_template_location, get_feature_sef_location
-
-#print(get_template_location())
-print(get_feature_sef_location())
-
-# COMMAND ----------
-
-import os
-os.getcwd()
-
-# COMMAND ----------
-
-pip install python-dotenv
-
-
-# COMMAND ----------
-
-from dotenv import find_dotenv, load_dotenv
-
-find_dotenv()
-
-# COMMAND ----------
-
-
