@@ -6,7 +6,7 @@ eol_table:
     name: customer_id
     type: int
   observation_date: 
-    name: renewal_date
+    name: observation_date
     type: date
   label: 
     name: commit
@@ -44,24 +44,39 @@ features:
   table: customers
   type: lookup
   source_col: tier
-  default_value: 'standard'
+  scalar_function: upper
+  default_value: 'STANDARD'
+  
  
- 
-- name: dbu_growth*
+- name: 6_month_growth_sql_dbu
   data_type: float
   table: dbu
   default_value: 1
   type: time_series_aggregate
   function: geometric_average
-  source_col: [sql_dbu, job_dbu, interactive_dbu]
+  source_col: sql_dbu
   grain: month
   time_boundary: lastCompleteMonth
-  window_length: [3,6]
+  window_length: 6
   offset:
     grain: month
-    length: 1
+    length: 0
 
+- name: 6_month_growth_job_dbu
+  data_type: float
+  table: dbu
+  default_value: 1
+  type: time_series_aggregate
+  function: geometric_average
+  source_col: job_dbu
+  grain: month
+  time_boundary: lastCompleteMonth
+  window_length: 6
+  offset:
+    grain: month
+    length: 0
     
+
 - name: customer_service_count
   data_type: int
   table: customer_support
@@ -76,8 +91,6 @@ features:
     operator: '='
     value: "'phone'"
     
-    
-  
 feature_store:
 
   - name: dbu_growth
@@ -88,8 +101,8 @@ feature_store:
     start_date: 2021-01-01
     end_date: 2022-08-01
     features:
-      - dbu_growth*
-
+      - 6_month_growth_sql_dbu
+      - 6_month_growth_job_dbu
 
   - name: customer_service_calls
     type: regular
@@ -100,4 +113,3 @@ feature_store:
     end_date: 2022-08-01
     features:
       - customer_service_count
-

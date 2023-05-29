@@ -1,6 +1,8 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC ####This note book illustrates installing the feature utils package (rather than cloning repo) and 'hyper-features'
+# MAGIC
+# MAGIC run on DBR ML 11.2 or higher.
 
 # COMMAND ----------
 
@@ -9,13 +11,13 @@
 
 # COMMAND ----------
 
-pip install --index-url https://test.pypi.org/simple/ --no-deps ben_mackenzie_features --upgrade
+pip install feature-store-utils
 
 
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC 
+# MAGIC
 # MAGIC use schema ben_customer_churn_model;
 
 # COMMAND ----------
@@ -54,7 +56,7 @@ pip install --index-url https://test.pypi.org/simple/ --no-deps ben_mackenzie_fe
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC create or replace view renewal_eol as select customer_id, renewal_date, commit from salesforce where contract_length =3
+# MAGIC create or replace view renewal_eol as select customer_id, renewal_date as observation_date, commit from salesforce where contract_length =3
 
 # COMMAND ----------
 
@@ -68,12 +70,9 @@ pip install --index-url https://test.pypi.org/simple/ --no-deps ben_mackenzie_fe
 
 # COMMAND ----------
 
-# MAGIC %sh
-# MAGIC cat features.yaml
-
-# COMMAND ----------
-
-from features.feature_generation import build_training_data_set,feature_tables, build_feature_table, register_dimension_table, tables, features
+from features.feature_generation import build_training_data_set
+df = build_training_data_set()
+display(df)
 
 
 # COMMAND ----------
@@ -128,21 +127,21 @@ feature_lookups = [
         feature_names=["dbu_growth_source_col_sql_dbu_window_length_3", "dbu_growth_source_col_sql_dbu_window_length_6",
                       "dbu_growth_source_col_job_dbu_window_length_3", "dbu_growth_source_col_job_dbu_window_length_6",
                       "dbu_growth_source_col_interactive_dbu_window_length_3", "dbu_growth_source_col_interactive_dbu_window_length_6"],
-        lookup_key="customer_id",
-        timestamp_lookup_key = "renewal_date"
+        lookup_key="aaa",
+        timestamp_lookup_key = "bbb"
     ),
     FeatureLookup(
         table_name="ben_customer_churn_model.customer_service_calls",
         feature_names=["customer_service_count"],        
-        lookup_key="customer_id",
-        timestamp_lookup_key = "renewal_date"
+        lookup_key="aaa",
+        timestamp_lookup_key = "bbb"
     ),
   
    FeatureLookup(
         table_name="ben_customer_churn_model.customers",
         feature_names=["tier"],        
-        lookup_key="customer_id",
-        timestamp_lookup_key = "renewal_date"
+        lookup_key="aaa",
+        timestamp_lookup_key = "bbb"
     )
       
 ]
@@ -158,3 +157,7 @@ training_df = training_set.load_df()
 # COMMAND ----------
 
 display(training_df)
+
+# COMMAND ----------
+
+
