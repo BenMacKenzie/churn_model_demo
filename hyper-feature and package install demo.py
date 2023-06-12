@@ -77,39 +77,38 @@ display(df)
 
 # COMMAND ----------
 
-df = build_training_data_set()
-
-# COMMAND ----------
-
-display(df)
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC ###Now lets create the corresponding feature tables
 # MAGIC ##### note that the training data set should NOT be used.   Look at feature table spec in yaml file.  Need to consider backfill, time density of features
 
 # COMMAND ----------
 
-build_feature_table(feature_tables['customer_service_calls'])
+from features.feature_generation import build_feature_table
+build_feature_table('customer_service_calls', drop_existing=True)
 
 # COMMAND ----------
 
-build_feature_table(feature_tables['dbu_growth'])
+build_feature_table('dbu_growth', drop_existing=True)
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC #### handle dimension tables differently.  Just register the underlying table with feature store
+# MAGIC
 
 # COMMAND ----------
 
+from features.feature_generation import register_dimension_table
+from features.feature_spec import get_tables
+tables = get_tables()
 register_dimension_table(tables['customers'])
+
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC #### observe that now we can build the same training data set using the feature store directly
+# MAGIC
 
 # COMMAND ----------
 
@@ -124,24 +123,22 @@ fs = FeatureStoreClient()
 feature_lookups = [
     FeatureLookup(
         table_name="ben_customer_churn_model.dbu_growth",
-        feature_names=["dbu_growth_source_col_sql_dbu_window_length_3", "dbu_growth_source_col_sql_dbu_window_length_6",
-                      "dbu_growth_source_col_job_dbu_window_length_3", "dbu_growth_source_col_job_dbu_window_length_6",
-                      "dbu_growth_source_col_interactive_dbu_window_length_3", "dbu_growth_source_col_interactive_dbu_window_length_6"],
-        lookup_key="aaa",
-        timestamp_lookup_key = "bbb"
+        feature_names=["6_month_growth_sql_dbu", "6_month_growth_job_dbu"],
+        lookup_key="customer_id",
+        timestamp_lookup_key = "observation_date"
     ),
     FeatureLookup(
         table_name="ben_customer_churn_model.customer_service_calls",
         feature_names=["customer_service_count"],        
-        lookup_key="aaa",
-        timestamp_lookup_key = "bbb"
+        lookup_key="customer_id",
+        timestamp_lookup_key = "observation_date"
     ),
   
    FeatureLookup(
         table_name="ben_customer_churn_model.customers",
         feature_names=["tier"],        
-        lookup_key="aaa",
-        timestamp_lookup_key = "bbb"
+        lookup_key="customer_id",
+        timestamp_lookup_key = "observation_date"
     )
       
 ]
