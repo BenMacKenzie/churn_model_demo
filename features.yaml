@@ -48,7 +48,7 @@ features:
   default_value: 'STANDARD'
   
  
-- name: 6_month_growth_sql_dbu
+- name: 6_month_growth_sql_dbu*
   data_type: float
   table: dbu
   default_value: 1
@@ -57,12 +57,12 @@ features:
   source_col: sql_dbu
   grain: month
   time_boundary: lastCompleteMonth
-  window_length: 6
+  window_length: [1,2,3]
   offset:
     grain: month
     length: 0
 
-- name: 6_month_growth_job_dbu
+- name: 6_month_growth_job_dbu*
   data_type: float
   table: dbu
   default_value: 1
@@ -71,7 +71,7 @@ features:
   source_col: job_dbu
   grain: month
   time_boundary: lastCompleteMonth
-  window_length: 6
+  window_length: [1,2,3]
   offset:
     grain: month
     length: 0
