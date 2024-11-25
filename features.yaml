@@ -1,4 +1,4 @@
-schema: ben_customer_churn_model
+schema: churn_model
 
 eol_table: 
   name: renewal_eol
@@ -47,31 +47,37 @@ features:
   scalar_function: upper
   default_value: 'STANDARD'
   
+- name: email_domain
+  data_type: string
+  table: customers
+  type: lookup
+  inline_function: upper(regexp_extract(email, "(?<=@)[^.]+(?=\\.)", 0))
+  default_value: 'UNKNOWN'
  
-- name: 6_month_growth_sql_dbu*
+- name: 6_month_growth_sql_dbu
   data_type: float
   table: dbu
   default_value: 1
-  type: time_series_aggregate
+  type: time_series_growth
   function: geometric_average
   source_col: sql_dbu
   grain: month
   time_boundary: lastCompleteMonth
-  window_length: [1,2,3]
+  window_length: 6
   offset:
     grain: month
     length: 0
 
-- name: 6_month_growth_job_dbu*
+- name: 6_month_growth_job_dbu
   data_type: float
   table: dbu
   default_value: 1
-  type: time_series_aggregate
+  type: time_series_growth  
   function: geometric_average
   source_col: job_dbu
   grain: month
   time_boundary: lastCompleteMonth
-  window_length: [1,2,3]
+  window_length: 6
   offset:
     grain: month
     length: 0

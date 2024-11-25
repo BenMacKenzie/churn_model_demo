@@ -5,8 +5,8 @@
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC create schema if not exists ben_customer_churn_model;
-# MAGIC use schema ben_customer_churn_model;
+# MAGIC create schema if not exists benmackenzie_catalog.churn_model;
+# MAGIC use schema benmackenzie_catalog.churn_model;
 
 # COMMAND ----------
 

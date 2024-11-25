@@ -11,14 +11,18 @@
 
 # COMMAND ----------
 
-pip install feature-store-utils
+pip install feature-store-utils=0.0.5
 
+
+# COMMAND ----------
+
+# MAGIC %restart_python
 
 # COMMAND ----------
 
 # MAGIC %sql
 # MAGIC
-# MAGIC use schema ben_customer_churn_model;
+# MAGIC use benmackenzie_catalog.churn_model
 
 # COMMAND ----------
 
