@@ -5,8 +5,9 @@
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC create schema if not exists benmackenzie_catalog.churn_model;
-# MAGIC use schema benmackenzie_catalog.churn_model;
+# MAGIC use catalog bmac;
+# MAGIC create schema churn_model;
+# MAGIC use schema churn_model;
 
 # COMMAND ----------
 
@@ -82,12 +83,12 @@ dbu_df = pd.DataFrame (data, columns = ['customer_id', 'date', 'interactive_dbu'
 customer_tier=[]
 for c in customers:
   d = random.randint(1, num_days-2)
- 
-  customer_tier.append([c, random.choice(['standard', 'enterprise']), dates[0], dates[d]])
-  customer_tier.append([c, random.choice(['standard', 'enterprise']), dates[d+1], date(2999,12,12)])
+  email = fake.ascii_company_email()
+  customer_tier.append([c, email, random.choice(['standard', 'enterprise']), dates[0], dates[d]])
+  customer_tier.append([c, email, random.choice(['standard', 'enterprise']), dates[d+1], date(2999,12,12)])
   
 
-customers_df = pd.DataFrame(customer_tier, columns=['customer_id', 'tier', 'row_effective_from', 'row_expiration'])
+customers_df = pd.DataFrame(customer_tier, columns=['customer_id', 'email', 'tier', 'row_effective_from', 'row_expiration'])
 
 renewal = [[c, date(2022, 1,1) + timedelta(random.randint(1,180)), random.randint(1,3), random.randint(1,100) > 20] for c in customers]
 renewal_df = pd.DataFrame(renewal, columns=['customer_id', 'renewal_date', 'contract_length', 'commit'])
@@ -118,4 +119,12 @@ spark.createDataFrame(customer_support_df).write.format('delta').mode('overwrite
 
 # COMMAND ----------
 
-
+# MAGIC %sql
+# MAGIC ALTER TABLE bmac.churn_model.customers 
+# MAGIC ALTER COLUMN customer_id SET NOT NULL;
+# MAGIC
+# MAGIC ALTER TABLE bmac.churn_model.customers 
+# MAGIC ALTER COLUMN row_effective_from SET NOT NULL;
+# MAGIC
+# MAGIC ALTER TABLE bmac.churn_model.customers 
+# MAGIC ADD CONSTRAINT primary_key_customers PRIMARY KEY (customer_id, row_effective_from TIMESERIES);

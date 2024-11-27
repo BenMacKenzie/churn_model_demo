@@ -11,7 +11,7 @@
 
 # COMMAND ----------
 
-pip install feature-store-utils=0.0.5
+pip install feature-store-utils
 
 
 # COMMAND ----------
@@ -22,7 +22,7 @@ pip install feature-store-utils=0.0.5
 
 # MAGIC %sql
 # MAGIC
-# MAGIC use benmackenzie_catalog.churn_model
+# MAGIC use bmac.churn_model
 
 # COMMAND ----------
 
@@ -88,25 +88,17 @@ display(df)
 # COMMAND ----------
 
 from features.feature_generation import build_feature_table
-build_feature_table('customer_service_calls', drop_existing=True)
+build_feature_table('customer_service_calls', drop_existing=False)
 
 # COMMAND ----------
 
-build_feature_table('dbu_growth', drop_existing=True)
+build_feature_table('dbu_growth', drop_existing=False)
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC #### handle dimension tables differently.  Just register the underlying table with feature store
+# MAGIC dimension tables are ready to go as is.  Need a function to handle email_domain though...don't use if for now.
 # MAGIC
-
-# COMMAND ----------
-
-from features.feature_generation import register_dimension_table
-from features.feature_spec import get_tables
-tables = get_tables()
-register_dimension_table(tables['customers'])
-
 
 # COMMAND ----------
 
@@ -126,20 +118,20 @@ fs = FeatureStoreClient()
 
 feature_lookups = [
     FeatureLookup(
-        table_name="ben_customer_churn_model.dbu_growth",
-        feature_names=["6_month_growth_sql_dbu", "6_month_growth_job_dbu"],
+        table_name="bmac.churn_model.dbu_growth",
+        feature_names=["6_month_growth_job_dbu_window_length_6", "6_month_growth_sql_dbu_window_length_6"],
         lookup_key="customer_id",
         timestamp_lookup_key = "observation_date"
     ),
     FeatureLookup(
-        table_name="ben_customer_churn_model.customer_service_calls",
+        table_name="bmac.churn_model.customer_service_calls",
         feature_names=["customer_service_count"],        
         lookup_key="customer_id",
         timestamp_lookup_key = "observation_date"
     ),
   
    FeatureLookup(
-        table_name="ben_customer_churn_model.customers",
+        table_name="bmac.churn_model.customers",
         feature_names=["tier"],        
         lookup_key="customer_id",
         timestamp_lookup_key = "observation_date"
